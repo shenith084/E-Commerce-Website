@@ -1,0 +1,90 @@
+@extends('layouts.app')
+
+@section('title', 'Admin - Orders')
+
+@section('content')
+<div class="bg-dark text-white py-4">
+    <div class="container d-flex justify-content-between align-items-center">
+        <h1 class="fw-bold mb-0"><i class="bi bi-shield-check me-2"></i>Admin: Orders</h1>
+        <div class="d-flex gap-2">
+            <a href="{{ route('admin.products.index') }}" class="btn btn-outline-light btn-sm rounded-pill px-3">Products</a>
+            <a href="{{ route('admin.categories.index') }}" class="btn btn-outline-light btn-sm rounded-pill px-3">Categories</a>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-white border-0 p-4">
+            <form action="{{ route('admin.orders.index') }}" method="GET" class="row g-3">
+                <div class="col-md-4">
+                    <select name="status" class="form-select border-0 bg-light" onchange="this.form.submit()">
+                        <option value="">All Statuses</option>
+                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                        <option value="processing" {{ request('status') == 'processing' ? 'selected' : '' }}>Processing</option>
+                        <option value="shipped" {{ request('status') == 'shipped' ? 'selected' : '' }}>Shipped</option>
+                        <option value="delivered" {{ request('status') == 'delivered' ? 'selected' : '' }}>Delivered</option>
+                        <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                    </select>
+                </div>
+                <div class="col-md-8 text-end">
+                    <span class="text-muted small">Viewing {{ $orders->count() }} of {{ $orders->total() }} total orders</span>
+                </div>
+            </form>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="border-0 px-4 py-3 small text-uppercase fw-bold text-muted">Order #</th>
+                            <th class="border-0 py-3 small text-uppercase fw-bold text-muted">Customer</th>
+                            <th class="border-0 py-3 small text-uppercase fw-bold text-muted">Total</th>
+                            <th class="border-0 py-3 small text-uppercase fw-bold text-muted">Payment</th>
+                            <th class="border-0 py-3 small text-uppercase fw-bold text-muted">Status</th>
+                            <th class="border-0 py-3 text-end px-4">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($orders as $order)
+                            <tr>
+                                <td class="px-4 py-3 fw-bold">{{ $order->order_number }}</td>
+                                <td>
+                                    <div class="fw-bold">{{ $order->user->name }}</div>
+                                    <small class="text-muted">{{ $order->user->email }}</small>
+                                </td>
+                                <td class="fw-bold">LKR {{ number_format($order->total, 2) }}</td>
+                                <td>
+                                    <span class="badge {{ $order->payment_status == 'paid' ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-warning' }} px-2 py-1">
+                                        {{ ucfirst($order->payment_status) }}
+                                    </span>
+                                </td>
+                                <td>
+                                    @php
+                                        $badgeClass = match($order->status) {
+                                            'pending' => 'bg-secondary',
+                                            'processing' => 'bg-primary',
+                                            'shipped' => 'bg-info',
+                                            'delivered' => 'bg-success',
+                                            'cancelled' => 'bg-danger',
+                                        };
+                                    @endphp
+                                    <span class="badge {{ $badgeClass }} text-white rounded-pill px-3 py-1" style="font-size: 0.75rem;">
+                                        {{ ucfirst($order->status) }}
+                                    </span>
+                                </td>
+                                <td class="text-end px-4">
+                                    <a href="{{ route('admin.orders.show', $order) }}" class="btn btn-dark btn-sm rounded-pill px-3 fw-bold">Manage</a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-white border-0 p-4">
+            {{ $orders->links() }}
+        </div>
+    </div>
+</div>
+@endsection
