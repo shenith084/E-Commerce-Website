@@ -24,15 +24,23 @@ class PayhereService
 
     public function generateHash(string $orderId, float $amount, string $currency = 'LKR'): string
     {
+        $merchantId      = trim($this->merchantId);
+        $merchantSecret  = trim($this->merchantSecret);
         $amountFormatted = number_format($amount, 2, '.', '');
-        $hashedSecret    = strtoupper(md5($this->merchantSecret));
-        $hash            = strtoupper(md5(
-            $this->merchantId .
-            $orderId .
-            $amountFormatted .
-            $currency .
-            $hashedSecret
-        ));
+        
+        $hashString = $merchantId . $orderId . $amountFormatted . $currency . strtoupper(md5($merchantSecret));
+        
+        $hash = strtoupper(md5($hashString));
+
+        \Log::debug('Payhere Hash Debug', [
+            'merchant_id' => $merchantId,
+            'order_id' => $orderId,
+            'amount' => $amountFormatted,
+            'currency' => $currency,
+            'hash_string_pre_md5' => $hashString,
+            'final_hash' => $hash
+        ]);
+
         return $hash;
     }
 

@@ -54,8 +54,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/payment/cancel', [PaymentController::class, 'cancel'])->name('payment.cancel');
 
     // Customer Dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
     Route::prefix('dashboard')->name('dashboard.')->group(function () {
-        Route::get('/', [DashboardController::class, 'index'])->name('index');
         Route::get('/orders', [DashboardController::class, 'orders'])->name('orders');
         Route::get('/orders/{order}', [DashboardController::class, 'orderShow'])->name('orders.show');
         Route::get('/profile', [DashboardController::class, 'profile'])->name('profile');
@@ -64,9 +65,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/wishlist/{product}', [DashboardController::class, 'wishlistToggle'])->name('wishlist.toggle');
         Route::post('/review/{product}', [DashboardController::class, 'storeReview'])->name('review.store');
     });
-
-    // Alias 'dashboard' to 'dashboard.index' for Breeze compatibility
-    Route::get('/dashboard', fn() => redirect()->route('dashboard.index'))->name('dashboard');
 
     // Breeze Profile Routes
     Route::get('/settings/profile', [\App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
