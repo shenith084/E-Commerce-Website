@@ -48,10 +48,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout/place-order', [CheckoutController::class, 'placeOrder'])->name('checkout.placeOrder');
 
-    // Payment
+    // Payment (Payhere)
     Route::get('/payment/{order}/pay', [PaymentController::class, 'pay'])->name('payment.pay');
     Route::get('/payment/return', [PaymentController::class, 'return'])->name('payment.return');
     Route::get('/payment/cancel', [PaymentController::class, 'cancel'])->name('payment.cancel');
+
+    // Test Payment Gateway (local simulation)
+    Route::get('/payment/{order}/test', [PaymentController::class, 'testPage'])->name('payment.test');
+    Route::post('/payment/{order}/test-process', [PaymentController::class, 'testProcess'])->name('payment.test.process');
 
     // Customer Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

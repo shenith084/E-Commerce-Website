@@ -68,4 +68,36 @@ class PaymentController extends Controller
     {
         return view('payment.cancel');
     }
+
+    // ─── Test / Demo Payment Gateway ─────────────────────────────────────────
+
+    public function testPage(Order $order)
+    {
+        abort_if($order->user_id !== auth()->id(), 403);
+        return view('payment.test_payment', compact('order'));
+    }
+
+    public function testProcess(Request $request, Order $order)
+    {
+        abort_if($order->user_id !== auth()->id(), 403);
+
+        $action = $request->input('action', 'success');
+
+        if ($action === 'success') {
+            $order->update([
+                'payment_status'   => 'paid',
+                'status'           => 'processing',
+                'payhere_order_id' => 'TEST-' . strtoupper(uniqid()),
+            ]);
+            session()->forget(['cart', 'pending_order_id']);
+            return redirect()->route('payment.return')
+                ->with('success', 'Test payment successful! Your order is being processed.');
+        }
+
+        // Simulate failure / cancel
+        $order->update(['payment_status' => 'failed', 'status' => 'cancelled']);
+        session()->forget(['cart', 'pending_order_id']);
+        return redirect()->route('payment.cancel')
+            ->with('error', 'Test payment was cancelled.');
+    }
 }

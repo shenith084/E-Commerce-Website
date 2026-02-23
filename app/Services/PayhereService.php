@@ -28,16 +28,18 @@ class PayhereService
         $merchantSecret  = trim($this->merchantSecret);
         $amountFormatted = number_format($amount, 2, '.', '');
         
-        $hashString = $merchantId . $orderId . $amountFormatted . $currency . strtoupper(md5($merchantSecret));
-        
+        $hashedSecret = strtoupper(md5($merchantSecret));
+        $hashString = $merchantId . $orderId . $amountFormatted . $currency . $hashedSecret;
         $hash = strtoupper(md5($hashString));
 
-        \Log::debug('Payhere Hash Debug', [
+        \Log::debug('Payhere Hash Diagnostic', [
             'merchant_id' => $merchantId,
             'order_id' => $orderId,
             'amount' => $amountFormatted,
             'currency' => $currency,
-            'hash_string_pre_md5' => $hashString,
+            'secret_masked' => substr($merchantSecret, 0, 4) . '...' . substr($merchantSecret, -4),
+            'hashed_secret' => $hashedSecret,
+            'hash_string_assembled' => $hashString,
             'final_hash' => $hash
         ]);
 
@@ -48,13 +50,13 @@ class PayhereService
     {
         $hash = $this->generateHash($order->order_number, $order->total);
 
-        return [
+        $paymentData = [
             'merchant_id'  => $this->merchantId,
             'return_url'   => route('payment.return'),
             'cancel_url'   => route('payment.cancel'),
             'notify_url'   => route('payment.notify'),
             'order_id'     => $order->order_number,
-            'items'        => 'Order #' . $order->order_number,
+            'items'        => $order->order_number,
             'amount'       => number_format($order->total, 2, '.', ''),
             'currency'     => 'LKR',
             'hash'         => $hash,
@@ -66,6 +68,10 @@ class PayhereService
             'city'         => $order->shipping_city,
             'country'      => 'Sri Lanka',
         ];
+
+        \Log::debug('Payhere Payment Data', $paymentData);
+
+        return $paymentData;
     }
 
     public function verifyNotification(array $data): bool
