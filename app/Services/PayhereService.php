@@ -26,31 +26,41 @@ class PayhereService
     {
         $merchantId      = trim($this->merchantId);
         $merchantSecret  = trim($this->merchantSecret);
+        
+        // Payhere expects amount formatted to 2 decimal places without thousands separator
         $amountFormatted = number_format($amount, 2, '.', '');
         
+        // The Secret must be MD5 hashed and Uppercased first
         $hashedSecret = strtoupper(md5($merchantSecret));
+        
+        // Assembly string: MerchantID + OrderID + Amount + Currency + HashedSecret
         $hashString = $merchantId . $orderId . $amountFormatted . $currency . $hashedSecret;
         $hash = strtoupper(md5($hashString));
 
-        // Log hash details for troubleshooting (optional)
+        // Critical Diagnostic Logging
         \Log::debug('Payhere Hash Diagnostic', [
-            'merchant_id' => $merchantId,
-            'order_id' => $orderId,
-            'amount' => $amountFormatted,
-            'currency' => $currency,
-            'hashed_secret' => $hashedSecret,
-            'final_hash' => $hash
+            'merchant_id'    => $merchantId,
+            'order_id'       => $orderId,
+            'amount'         => $amountFormatted,
+            'currency'       => $currency,
+            'secret_masked'  => substr($merchantSecret, 0, 4) . '...' . substr($merchantSecret, -4),
+            'hashed_secret'  => $hashedSecret,
+            'hash_string'    => $hashString,
+            'final_hash'     => $hash
         ]);
 
         return $hash;
     }
 
+
     public function buildPaymentData(\App\Models\Order $order): array
     {
         $hash = $this->generateHash($order->order_number, $order->total);
 
-        $itemCount   = $order->items()->count();
-        $itemsLabel  = "Order #{$order->order_number} ({$itemCount} item" . ($itemCount !== 1 ? 's' : '') . ')';
+        // Split name into first and last
+        $nameParts = explode(' ', trim($order->shipping_name), 2);
+        $firstName = $nameParts[0];
+        $lastName  = $nameParts[1] ?? 'Customer'; // Payhere might require a last name
 
         $paymentData = [
             'merchant_id'  => $this->merchantId,
@@ -58,12 +68,12 @@ class PayhereService
             'cancel_url'   => route('payment.cancel'),
             'notify_url'   => route('payment.notify'),
             'order_id'     => $order->order_number,
-            'items'        => $itemsLabel,
+            'items'        => "Order " . $order->order_number, // Simplified
             'amount'       => number_format($order->total, 2, '.', ''),
             'currency'     => 'LKR',
             'hash'         => $hash,
-            'first_name'   => $order->shipping_name,
-            'last_name'    => '',
+            'first_name'   => $firstName,
+            'last_name'    => $lastName,
             'email'        => $order->shipping_email,
             'phone'        => $order->shipping_phone,
             'address'      => $order->shipping_address,
@@ -75,6 +85,7 @@ class PayhereService
 
         return $paymentData;
     }
+
 
     public function verifyNotification(array $data): bool
     {
