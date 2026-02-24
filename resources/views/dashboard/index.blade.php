@@ -23,7 +23,7 @@
 </div>
 
 <div class="container py-5 mt-n4">
-    <div class="row g-3 row-cols-1 row-cols-md-3">
+    <div class="row g-4">
         <!-- Stats -->
         <div class="col-md-4">
             <div class="card border-0 shadow-sm rounded-4 h-100 p-3">

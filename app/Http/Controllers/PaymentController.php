@@ -12,7 +12,7 @@ class PaymentController extends Controller
 
     public function pay(Order $order)
     {
-        // Make sure the order belongs to the logged-in user
+        // Check if the authenticated user owns this order
         abort_if($order->user_id !== auth()->id(), 403);
 
         $paymentData = $this->payhere->buildPaymentData($order);
@@ -36,7 +36,7 @@ class PaymentController extends Controller
             return response('Order not found', 404);
         }
 
-        // status_code 2 = Success
+        // Handle successful payment
         if ((int) $data['status_code'] === 2) {
             $order->update([
                 'payment_status'   => 'paid',
@@ -44,7 +44,7 @@ class PaymentController extends Controller
                 'payhere_order_id' => $data['payment_id'] ?? null,
             ]);
 
-            // Clear cart
+            // Clear the shopping cart session
             session()->forget('cart');
         } elseif ((int) $data['status_code'] === 0) {
             $order->update(['payment_status' => 'pending']);
@@ -59,7 +59,11 @@ class PaymentController extends Controller
     {
         $orderId = session()->get('pending_order_id');
         $order   = $orderId ? Order::find($orderId) : null;
-        session()->forget(['cart', 'pending_order_id']);
+        
+        // Keep the order ID in session for local testing so we can show the confirmation button
+        if (!(config('app.env') === 'local' && $order && $order->payment_status === 'pending')) {
+            session()->forget(['cart', 'pending_order_id']);
+        }
 
         return view('payment.success', compact('order'));
     }
@@ -69,7 +73,7 @@ class PaymentController extends Controller
         return view('payment.cancel');
     }
 
-    // ─── Test / Demo Payment Gateway ─────────────────────────────────────────
+    // Development testing routes
 
     public function testPage(Order $order)
     {
@@ -89,12 +93,20 @@ class PaymentController extends Controller
                 'status'           => 'processing',
                 'payhere_order_id' => 'TEST-' . strtoupper(uniqid()),
             ]);
-            session()->forget(['cart', 'pending_order_id']);
-            return redirect()->route('payment.return')
-                ->with('success', 'Test payment successful! Your order is being processed.');
+            
+            // Keep session data for local environment to display the updated order status
+            if (config('app.env') !== 'local') {
+                session()->forget(['cart', 'pending_order_id']);
+            }
+            
+            // Redirect user to selected page
+            $redirectTo = $request->input('redirect', 'payment.return');
+            
+            return redirect()->route($redirectTo)
+                ->with('success', 'Payment confirmed manually! Order is now processing.');
         }
 
-        // Simulate failure / cancel
+        // Handle cancelled or failed test payment
         $order->update(['payment_status' => 'failed', 'status' => 'cancelled']);
         session()->forget(['cart', 'pending_order_id']);
         return redirect()->route('payment.cancel')

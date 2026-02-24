@@ -32,14 +32,13 @@ class PayhereService
         $hashString = $merchantId . $orderId . $amountFormatted . $currency . $hashedSecret;
         $hash = strtoupper(md5($hashString));
 
+        // Log hash details for troubleshooting (optional)
         \Log::debug('Payhere Hash Diagnostic', [
             'merchant_id' => $merchantId,
             'order_id' => $orderId,
             'amount' => $amountFormatted,
             'currency' => $currency,
-            'secret_masked' => substr($merchantSecret, 0, 4) . '...' . substr($merchantSecret, -4),
             'hashed_secret' => $hashedSecret,
-            'hash_string_assembled' => $hashString,
             'final_hash' => $hash
         ]);
 
