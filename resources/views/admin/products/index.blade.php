@@ -64,70 +64,50 @@
             <table class="table table-hover align-middle mb-0">
                 <thead class="bg-dark text-white">
                     <tr>
-                        <th class="border-0 px-4 py-3" style="width: 60px;">Image</th>
+                        <th class="border-0 px-3 py-3" style="width: 50px;">Img</th>
                         <th class="border-0 py-3">Product</th>
-                        <th class="border-0 py-3">Category</th>
+                        <th class="border-0 py-3 d-none d-md-table-cell">Category</th>
                         <th class="border-0 py-3">Price</th>
                         <th class="border-0 py-3 text-center">Stock</th>
-                        <th class="border-0 py-3 text-center">Status</th>
-                        <th class="border-0 py-3 text-end pe-4">Actions</th>
+                        <th class="border-0 py-3 text-center d-none d-md-table-cell">Status</th>
+                        <th class="border-0 py-3 text-end pe-3">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($products as $product)
                         <tr>
-                            <td class="px-4 py-3">
+                            <td class="px-3 py-3">
                                 @if($product->image)
-                                    <img src="{{ asset('storage/' . $product->image) }}" class="rounded-3" style="width: 48px; height: 48px; object-fit: cover;" alt="{{ $product->name }}">
+                                    <img src="{{ asset('storage/' . $product->image) }}" class="rounded-3" style="width: 36px; height: 36px; object-fit: cover;" alt="{{ $product->name }}">
                                 @else
-                                    <div class="rounded-3 bg-light d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
-                                        <i class="bi bi-image text-muted"></i>
+                                    <div class="rounded-3 bg-light d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                                        <i class="bi bi-image text-muted small"></i>
                                     </div>
                                 @endif
                             </td>
                             <td class="py-3">
-                                <div class="fw-bold text-dark">{{ $product->name }}</div>
-                                <small class="text-muted">#{{ $product->id }} &bull; {{ Str::limit($product->description, 50) }}</small>
-                                @if($product->is_featured)
-                                    <span class="badge bg-warning-subtle text-warning ms-1" style="font-size: 0.65rem;">★ Featured</span>
-                                @endif
+                                <div class="fw-bold text-dark small">{{ $product->name }}</div>
+                                <small class="text-muted d-none d-lg-inline">#{{ $product->id }} &bull; {{ Str::limit($product->description, 30) }}</small>
+                                <div class="d-md-none small text-muted">{{ $product->category->name }}</div>
                             </td>
-                            <td>
-                                <span class="badge bg-light text-dark border px-2 py-1">{{ $product->category->name }}</span>
+                            <td class="d-none d-md-table-cell">
+                                <span class="badge bg-light text-dark border px-2 py-1" style="font-size: 0.65rem;">{{ $product->category->name }}</span>
                             </td>
-                            <td class="fw-bold">LKR {{ number_format($product->price, 2) }}</td>
+                            <td class="fw-bold small">LKR {{ number_format($product->price, 0) }}</td>
                             <td class="text-center">
-                                @if($product->stock === 0)
-                                    <span class="badge bg-danger-subtle text-danger rounded-pill px-2">0 — Out</span>
-                                @elseif($product->stock < 5)
-                                    <span class="badge bg-warning-subtle text-warning rounded-pill px-2">{{ $product->stock }} — Low</span>
-                                @else
-                                    <span class="badge bg-success-subtle text-success rounded-pill px-2">{{ $product->stock }}</span>
-                                @endif
+                                <span class="badge bg-light text-dark border rounded-pill px-2" style="font-size: 0.6rem;">{{ $product->stock }}</span>
                             </td>
-                            <td class="text-center">
+                            <td class="text-center d-none d-md-table-cell">
                                 @if($product->is_active)
-                                    <span class="badge bg-success rounded-pill px-3" style="font-size: 0.7rem;">Active</span>
+                                    <span class="badge bg-success rounded-pill px-2" style="font-size: 0.6rem;">Active</span>
                                 @else
-                                    <span class="badge bg-secondary rounded-pill px-3" style="font-size: 0.7rem;">Inactive</span>
+                                    <span class="badge bg-secondary rounded-pill px-2" style="font-size: 0.6rem;">Draft</span>
                                 @endif
                             </td>
-                            <td class="text-end px-4 py-3">
-                                <div class="d-flex justify-content-end gap-2">
-                                    <a href="{{ route('admin.products.show', $product) }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3" title="View">
-                                        <i class="bi bi-eye"></i>
-                                    </a>
-                                    <a href="{{ route('admin.products.edit', $product) }}" class="btn btn-outline-dark btn-sm rounded-pill px-3" title="Edit">
-                                        <i class="bi bi-pencil"></i>
-                                    </a>
-                                    <form action="{{ route('admin.products.destroy', $product) }}" method="POST"
-                                        onsubmit="return confirm('Delete \'{{ addslashes($product->name) }}\'? This cannot be undone.')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3" title="Delete">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </form>
+                            <td class="text-end px-3 py-3">
+                                <div class="btn-group">
+                                    <a href="{{ route('admin.products.show', $product) }}" class="btn btn-outline-dark btn-sm rounded-start-pill p-1 px-2" title="View"><i class="bi bi-eye"></i></a>
+                                    <a href="{{ route('admin.products.edit', $product) }}" class="btn btn-outline-dark btn-sm p-1 px-2" title="Edit"><i class="bi bi-pencil"></i></a>
                                 </div>
                             </td>
                         </tr>

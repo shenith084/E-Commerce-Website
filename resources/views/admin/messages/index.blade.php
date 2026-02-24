@@ -24,50 +24,37 @@
             <table class="table table-hover align-middle mb-0">
                 <thead class="bg-dark text-white">
                     <tr>
-                        <th class="border-0 px-4 py-3">Status</th>
-                        <th class="border-0 py-3">From</th>
-                        <th class="border-0 py-3">Subject</th>
-                        <th class="border-0 py-3 text-center">Date</th>
-                        <th class="border-0 py-3 text-end pe-4">Actions</th>
+                        <th class="border-0 px-3 py-3">Status</th>
+                        <th class="border-0 py-3">Sender</th>
+                        <th class="border-0 py-3 d-none d-md-table-cell">Subject</th>
+                        <th class="border-0 py-3 text-end pe-3">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($messages as $message)
                         <tr class="{{ $message->status === 'unread' ? 'bg-light-subtle fw-bold' : '' }}">
-                            <td class="px-4 py-3">
+                            <td class="px-3 py-3">
                                 @if($message->status === 'unread')
-                                    <span class="badge bg-primary rounded-pill px-2">Unread</span>
-                                @elseif($message->status === 'read')
-                                    <span class="badge bg-secondary rounded-pill px-2">Read</span>
+                                    <span class="badge bg-primary rounded-pill px-2" style="font-size: 0.6rem;">New</span>
                                 @else
-                                    <span class="badge bg-success rounded-pill px-2">Replied</span>
+                                    <span class="badge bg-secondary-subtle text-secondary rounded-pill px-2" style="font-size: 0.6rem;">Read</span>
                                 @endif
                             </td>
                             <td>
-                                <div class="text-dark">{{ $message->name }}</div>
-                                <small class="text-muted">{{ $message->email }}</small>
+                                <div class="text-dark small fw-bold">{{ Str::limit($message->name, 15) }}</div>
+                                <small class="text-muted d-none d-lg-block">{{ $message->email }}</small>
+                                <div class="d-md-none small text-muted text-truncate" style="max-width: 100px;">{{ $message->subject }}</div>
                             </td>
-                            <td>
-                                <div class="text-dark">{{ $message->subject }}</div>
-                                <small class="text-muted">{{ Str::limit($message->message, 50) }}</small>
+                            <td class="d-none d-md-table-cell">
+                                <div class="text-dark small text-truncate" style="max-width: 200px;">{{ $message->subject }}</div>
+                                <small class="text-muted d-none d-lg-block">{{ Str::limit($message->message, 40) }}</small>
                             </td>
-                            <td class="text-center text-muted small">
-                                {{ $message->created_at->format('d M, h:i A') }}
-                            </td>
-                            <td class="text-end px-4 py-3">
-                                <div class="d-flex justify-content-end gap-2">
+                            <td class="text-end px-3 py-3">
+                                <div class="btn-group">
                                     <a href="{{ route('admin.messages.show', $message) }}" 
-                                       class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                                       class="btn btn-outline-dark btn-sm rounded-pill p-1 px-2" style="font-size: 0.7rem;">
                                         <i class="bi bi-eye"></i>
                                     </a>
-                                    <form action="{{ route('admin.messages.destroy', $message) }}" method="POST"
-                                          onsubmit="return confirm('Delete this message?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </form>
                                 </div>
                             </td>
                         </tr>

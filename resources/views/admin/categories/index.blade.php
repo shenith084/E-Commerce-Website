@@ -27,44 +27,34 @@
             <table class="table table-hover align-middle mb-0">
                 <thead class="bg-dark text-white">
                     <tr>
-                        <th class="border-0 px-4 py-3">Name</th>
-                        <th class="border-0 py-3">Slug</th>
-                        <th class="border-0 py-3">Description</th>
-                        <th class="border-0 py-3 text-center">Products</th>
-                        <th class="border-0 py-3 text-center">Created</th>
-                        <th class="border-0 py-3 text-end pe-4">Actions</th>
+                        <th class="border-0 px-3 py-3">Category</th>
+                        <th class="border-0 py-3 d-none d-lg-table-cell">Slug</th>
+                        <th class="border-0 py-3 d-none d-md-table-cell">Description</th>
+                        <th class="border-0 py-3 text-center">Items</th>
+                        <th class="border-0 py-3 text-end pe-3">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($categories as $category)
                         <tr>
-                            <td class="px-4 py-3 fw-bold text-dark">
-                                <i class="bi bi-tag-fill text-warning me-2" style="font-size: 0.8rem;"></i>
+                            <td class="px-3 py-3 fw-bold text-dark small">
+                                <i class="bi bi-tag-fill text-warning me-1" style="font-size: 0.7rem;"></i>
                                 {{ $category->name }}
                             </td>
-                            <td><code class="text-muted small">{{ $category->slug }}</code></td>
-                            <td class="text-muted small">{{ Str::limit($category->description, 60) ?: '—' }}</td>
+                            <td class="d-none d-lg-table-cell"><code class="text-muted small">{{ $category->slug }}</code></td>
+                            <td class="d-none d-md-table-cell text-muted small">{{ Str::limit($category->description, 40) ?: '—' }}</td>
                             <td class="text-center">
                                 <a href="{{ route('admin.products.index', ['category' => $category->id]) }}"
-                                   class="badge bg-light text-dark border text-decoration-none px-3 py-2">
-                                    {{ $category->products_count }} Products
+                                   class="badge bg-light text-dark border text-decoration-none px-2 py-1" style="font-size: 0.65rem;">
+                                    {{ $category->products_count }}
                                 </a>
                             </td>
-                            <td class="text-center text-muted small">{{ $category->created_at->format('d M Y') }}</td>
-                            <td class="text-end px-4 py-3">
-                                <div class="d-flex justify-content-end gap-2">
+                            <td class="text-end px-3 py-3">
+                                <div class="btn-group">
                                     <a href="{{ route('admin.categories.edit', $category) }}"
-                                       class="btn btn-outline-dark btn-sm rounded-pill px-3">
-                                        <i class="bi bi-pencil me-1"></i>Edit
+                                       class="btn btn-outline-dark btn-sm rounded-pill p-1 px-2" style="font-size: 0.7rem;">
+                                        <i class="bi bi-pencil"></i>
                                     </a>
-                                    <form action="{{ route('admin.categories.destroy', $category) }}" method="POST"
-                                          onsubmit="return confirm('Delete category \'{{ addslashes($category->name) }}\'? Products in this category will lose their category link.')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </form>
                                 </div>
                             </td>
                         </tr>

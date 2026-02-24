@@ -22,7 +22,7 @@
                         </div>
                         <div>
                             <h6 class="fw-bold mb-0">Address</h6>
-                            <p class="text-muted small mb-0">123 ShopX Lane, Colombo 03, Sri Lanka</p>
+                            <p class="text-muted small mb-0">Matara Sri Lanka</p>
                         </div>
                     </div>
                     <div class="d-flex mb-4">
@@ -31,7 +31,7 @@
                         </div>
                         <div>
                             <h6 class="fw-bold mb-0">Phone</h6>
-                            <p class="text-muted small mb-0">+94 11 234 5678</p>
+                            <p class="text-muted small mb-0">0705151###</p>
                         </div>
                     </div>
                     <div class="d-flex mb-4">
@@ -40,7 +40,7 @@
                         </div>
                         <div>
                             <h6 class="fw-bold mb-0">Email</h6>
-                            <p class="text-muted small mb-0">support@shopx.lk</p>
+                            <p class="text-muted small mb-0">shenith084@gmail.com</p>
                         </div>
                     </div>
                 </div>

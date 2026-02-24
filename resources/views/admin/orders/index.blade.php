@@ -50,25 +50,26 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead class="bg-light">
                         <tr>
-                            <th class="border-0 px-4 py-3 small text-uppercase fw-bold text-muted">Order #</th>
+                            <th class="border-0 px-3 py-3 small text-uppercase fw-bold text-muted">ID</th>
                             <th class="border-0 py-3 small text-uppercase fw-bold text-muted">Customer</th>
-                            <th class="border-0 py-3 small text-uppercase fw-bold text-muted">Total</th>
+                            <th class="border-0 py-3 small text-uppercase fw-bold text-muted d-none d-md-table-cell">Total</th>
                             <th class="border-0 py-3 small text-uppercase fw-bold text-muted">Payment</th>
                             <th class="border-0 py-3 small text-uppercase fw-bold text-muted">Status</th>
-                            <th class="border-0 py-3 text-end px-4">Action</th>
+                            <th class="border-0 py-3 text-end px-3">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($orders as $order)
                             <tr>
-                                <td class="px-4 py-3 fw-bold">{{ $order->order_number }}</td>
+                                <td class="px-3 py-3 fw-bold small">{{ $order->order_number }}</td>
                                 <td>
-                                    <div class="fw-bold">{{ $order->user->name }}</div>
-                                    <small class="text-muted">{{ $order->user->email }}</small>
+                                    <div class="fw-bold small">{{ Str::limit($order->user->name, 15) }}</div>
+                                    <small class="text-muted d-none d-md-block">{{ $order->user->email }}</small>
+                                    <div class="d-md-none small fw-bold">LKR {{ number_format($order->total, 0) }}</div>
                                 </td>
-                                <td class="fw-bold">LKR {{ number_format($order->total, 2) }}</td>
+                                <td class="fw-bold small d-none d-md-table-cell">LKR {{ number_format($order->total, 0) }}</td>
                                 <td>
-                                    <span class="badge {{ $order->payment_status == 'paid' ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-warning' }} px-2 py-1">
+                                    <span class="badge {{ $order->payment_status == 'paid' ? 'bg-success-subtle text-success' : 'bg-warning-subtle text-warning' }} px-2 py-1" style="font-size: 0.6rem;">
                                         {{ ucfirst($order->payment_status) }}
                                     </span>
                                 </td>
@@ -80,14 +81,15 @@
                                             'shipped' => 'bg-info',
                                             'delivered' => 'bg-success',
                                             'cancelled' => 'bg-danger',
+                                            default => 'bg-dark'
                                         };
                                     @endphp
-                                    <span class="badge {{ $badgeClass }} text-white rounded-pill px-3 py-1" style="font-size: 0.75rem;">
+                                    <span class="badge {{ $badgeClass }} text-white rounded-pill px-2 py-1" style="font-size: 0.6rem;">
                                         {{ ucfirst($order->status) }}
                                     </span>
                                 </td>
-                                <td class="text-end px-4">
-                                    <a href="{{ route('admin.orders.show', $order) }}" class="btn btn-dark btn-sm rounded-pill px-3 fw-bold">Manage</a>
+                                <td class="text-end px-3">
+                                    <a href="{{ route('admin.orders.show', $order) }}" class="btn btn-dark btn-sm rounded-pill p-1 px-2" style="font-size: 0.7rem;">View</a>
                                 </td>
                             </tr>
                         @endforeach
