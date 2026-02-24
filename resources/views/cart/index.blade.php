@@ -35,9 +35,9 @@
                             <thead class="bg-light">
                                 <tr>
                                     <th class="border-0 px-4 py-3">Product</th>
-                                    <th class="border-0 py-3">Price</th>
-                                    <th class="border-0 py-3">Quantity</th>
-                                    <th class="border-0 py-3 text-end px-4">Subtotal</th>
+                                    <th class="border-0 py-3 d-none d-md-table-cell">Price</th>
+                                    <th class="border-0 py-3">Qty</th>
+                                    <th class="border-0 py-3 text-end px-4">Total</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -64,12 +64,12 @@
                                                 </div>
                                             </div>
                                         </td>
-                                        <td>LKR {{ number_format($item['price'], 2) }}</td>
+                                        <td class="d-none d-md-table-cell text-muted small">LKR {{ number_format($item['price'], 2) }}</td>
                                         <td>
                                             <form action="{{ route('cart.update', $item['id']) }}" method="POST" id="update-form-{{ $item['id'] }}">
                                                 @csrf
                                                 @method('PATCH')
-                                                <input type="number" name="quantity" class="form-control form-control-sm text-center" value="{{ $item['quantity'] }}" min="1" style="width: 70px;" onchange="document.getElementById('update-form-{{ $item['id'] }}').submit()">
+                                                <input type="number" name="quantity" class="form-control form-control-sm text-center shadow-none border-0 bg-light" value="{{ $item['quantity'] }}" min="1" style="width: 50px;" onchange="document.getElementById('update-form-{{ $item['id'] }}').submit()">
                                             </form>
                                         </td>
                                         <td class="text-end px-4 fw-bold">LKR {{ number_format($item['price'] * $item['quantity'], 2) }}</td>

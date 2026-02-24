@@ -1,11 +1,11 @@
 <div class="row g-4" id="products-grid">
     @forelse($products as $product)
-        <div class="col-md-4">
+        <div class="col-6 col-md-4">
             <div class="card product-card h-100 shadow-sm border-0 position-relative overflow-hidden">
                 @if($product->image)
-                    <img src="{{ asset('storage/' . $product->image) }}" class="card-img-top" alt="{{ $product->name }}" style="height: 250px; object-fit: cover;">
+                    <img src="{{ asset('storage/' . $product->image) }}" class="card-img-top" alt="{{ $product->name }}" style="height: 180px; object-fit: cover;">
                 @else
-                    <div class="bg-secondary-subtle d-flex align-items-center justify-content-center" style="height: 250px;">
+                    <div class="bg-secondary-subtle d-flex align-items-center justify-content-center" style="height: 180px;">
                         <i class="bi bi-image text-muted fs-1"></i>
                     </div>
                 @endif

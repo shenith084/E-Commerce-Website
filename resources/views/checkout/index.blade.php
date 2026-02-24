@@ -23,8 +23,8 @@
             <!-- Shipping Info -->
             <div class="col-lg-7">
                 <div class="card border-0 shadow-sm rounded-4 mb-4">
-                    <div class="card-body p-4">
-                        <h5 class="fw-bold mb-4"><i class="bi bi-geo-alt me-2 text-warning"></i> Shipping Information</h5>
+                    <div class="card-body p-3 p-md-4 text-start">
+                        <h5 class="fw-bold mb-4 d-flex align-items-center"><i class="bi bi-geo-alt me-2 text-warning"></i> Shipping Info</h5>
                         <div class="row g-3">
                             <div class="col-12">
                                 <label for="shipping_name" class="form-label small fw-bold text-muted">Full Name</label>
@@ -79,24 +79,24 @@
                 <div class="card border-0 shadow-sm rounded-4 sticky-top" style="top: 100px;">
                     <div class="card-body p-4">
                         <h5 class="fw-bold mb-4">Your Order</h5>
-                        <div class="cart-items-preview mb-4" style="max-height: 300px; overflow-y: auto;">
+                        <div class="cart-items-preview mb-4" style="max-height: 200px; overflow-y: auto; overflow-x: hidden;">
                             @foreach($cart as $item)
                                 <div class="d-flex align-items-center mb-3">
-                                    <div class="rounded-3 overflow-hidden me-3 border" style="width: 50px; height: 50px; flex-shrink: 0;">
+                                    <div class="rounded-3 overflow-hidden me-2 border" style="width: 40px; height: 40px; flex-shrink: 0;">
                                         @if($item['image'])
                                             <img src="{{ asset('storage/' . $item['image']) }}" class="img-fluid" alt="{{ $item['name'] }}">
                                         @else
                                             <div class="bg-light d-flex align-items-center justify-content-center h-100">
-                                                <i class="bi bi-image text-muted small"></i>
+                                                <i class="bi bi-image text-muted small" style="font-size: 0.6rem;"></i>
                                             </div>
                                         @endif
                                     </div>
-                                    <div class="flex-grow-1">
-                                        <h6 class="small fw-bold mb-0 text-truncate" style="max-width: 180px;">{{ $item['name'] }}</h6>
-                                        <small class="text-muted">Qty: {{ $item['quantity'] }}</small>
+                                    <div class="flex-grow-1 min-w-0">
+                                        <h6 class="small fw-bold mb-0 text-truncate">{{ $item['name'] }}</h6>
+                                        <small class="text-muted" style="font-size: 0.7rem;">Qty: {{ $item['quantity'] }}</small>
                                     </div>
-                                    <div class="text-end">
-                                        <span class="small fw-bold">LKR {{ number_format($item['price'] * $item['quantity'], 2) }}</span>
+                                    <div class="ms-2 text-end" style="flex-shrink: 0;">
+                                        <span class="small fw-bold" style="font-size: 0.8rem;">LKR {{ number_format($item['price'] * $item['quantity'], 2) }}</span>
                                     </div>
                                 </div>
                             @endforeach

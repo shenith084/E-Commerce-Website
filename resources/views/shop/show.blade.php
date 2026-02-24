@@ -92,7 +92,7 @@
                     </div>
                 </form>
 
-                <div class="card bg-light border-0 p-3 mb-4 rounded-4">
+                <div class="card bg-light border-0 p-3 mb-4 rounded-4 text-start">
                     <div class="row text-center g-3">
                         <div class="col-4">
                             <i class="bi bi-truck fs-4 text-warning d-block mb-1"></i>
@@ -106,6 +106,25 @@
                             <i class="bi bi-arrow-repeat fs-4 text-warning d-block mb-1"></i>
                             <span class="small d-block fw-semibold">Easy Returns</span>
                         </div>
+                    </div>
+                </div>
+
+                <div class="text-start">
+                    <h6 class="fw-bold text-muted text-uppercase small mb-3">Share this product</h6>
+                    <div class="d-flex gap-2">
+                        @php $shareUrl = urlencode(url()->current()); $shareText = urlencode("Check out this amazing product: " . $product->name); @endphp
+                        <a href="https://www.facebook.com/sharer/sharer.php?u={{ $shareUrl }}" target="_blank" class="btn btn-outline-primary rounded-circle p-2 border-1" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-facebook"></i>
+                        </a>
+                        <a href="https://twitter.com/intent/tweet?url={{ $shareUrl }}&text={{ $shareText }}" target="_blank" class="btn btn-outline-info rounded-circle p-2 border-1" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-twitter-x"></i>
+                        </a>
+                        <a href="https://api.whatsapp.com/send?text={{ $shareText }}%20{{ $shareUrl }}" target="_blank" class="btn btn-outline-success rounded-circle p-2 border-1" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                            <i class="bi bi-whatsapp"></i>
+                        </a>
+                        <button onclick="navigator.clipboard.writeText('{{ url()->current() }}').then(() => alert('Link copied!'))" class="btn btn-outline-secondary rounded-circle p-2 border-1" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;" title="Copy Link">
+                            <i class="bi bi-link-45deg"></i>
+                        </button>
                     </div>
                 </div>
             </div>

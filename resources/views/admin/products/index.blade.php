@@ -1,83 +1,159 @@
 @extends('layouts.app')
 
-@section('title', 'Admin - Products')
+@section('title', 'Admin: Products')
 
 @section('content')
 <div class="bg-dark text-white py-4">
     <div class="container d-flex justify-content-between align-items-center">
-        <h1 class="fw-bold mb-0">Admin: Products</h1>
-        <a href="{{ route('admin.products.create') }}" class="btn btn-warning btn-sm rounded-pill px-4 fw-bold"><i class="bi bi-plus-lg me-1"></i> New Product</a>
+        <div>
+            <h1 class="fw-bold mb-0"><i class="bi bi-box-seam me-2 text-warning"></i>Products</h1>
+            <small class="opacity-75">{{ $products->total() }} product(s) found</small>
+        </div>
+        <a href="{{ route('admin.products.create') }}" class="btn btn-warning fw-bold rounded-pill px-4">
+            <i class="bi bi-plus-lg me-1"></i>Add Product
+        </a>
     </div>
 </div>
 
 <div class="container py-5">
-    <div class="card border-0 shadow-sm rounded-4">
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="bg-light">
-                        <tr>
-                            <th class="border-0 px-4 py-3 small text-uppercase fw-bold text-muted">ID</th>
-                            <th class="border-0 py-3 small text-uppercase fw-bold text-muted">Product</th>
-                            <th class="border-0 py-3 small text-uppercase fw-bold text-muted">Category</th>
-                            <th class="border-0 py-3 small text-uppercase fw-bold text-muted">Price</th>
-                            <th class="border-0 py-3 small text-uppercase fw-bold text-muted">Stock</th>
-                            <th class="border-0 py-3 small text-uppercase fw-bold text-muted">Status</th>
-                            <th class="border-0 py-3 text-end px-4">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($products as $product)
-                            <tr>
-                                <td class="px-4 py-3 text-muted">{{ $product->id }}</td>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="rounded border overflow-hidden me-3" style="width: 40px; height: 40px; flex-shrink: 0;">
-                                            @if($product->image)
-                                                <img src="{{ asset('storage/' . $product->image) }}" class="img-fluid" alt="{{ $product->name }}">
-                                            @else
-                                                <div class="bg-light d-flex align-items-center justify-content-center h-100">
-                                                    <i class="bi bi-image text-muted small"></i>
-                                                </div>
-                                            @endif
-                                        </div>
-                                        <div>
-                                            <div class="fw-bold">{{ $product->name }}</div>
-                                            @if($product->is_featured)<span class="badge bg-warning text-dark px-2" style="font-size: 0.6rem;">FEATURED</span>@endif
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>{{ $product->category->name }}</td>
-                                <td class="fw-bold">LKR {{ number_format($product->price, 2) }}</td>
-                                <td>
-                                    <span class="fw-semibold {{ $product->stock < 5 ? 'text-danger' : 'text-dark' }}">{{ $product->stock }}</span>
-                                </td>
-                                <td>
-                                    @if($product->is_active)
-                                        <span class="badge bg-success-subtle text-success px-2 py-1">Active</span>
-                                    @else
-                                        <span class="badge bg-danger-subtle text-danger px-2 py-1">Inactive</span>
-                                    @endif
-                                </td>
-                                <td class="text-end px-4">
-                                    <div class="d-flex justify-content-end gap-2">
-                                        <a href="{{ route('admin.products.edit', $product) }}" class="btn btn-outline-dark btn-sm rounded-pill px-3">Edit</a>
-                                        <form action="{{ route('admin.products.destroy', $product) }}" method="POST" onsubmit="return confirm('Are you sure?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-link text-danger btn-sm p-0"><i class="bi bi-trash"></i></button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
+    @if(session('success'))
+        <div class="alert alert-success rounded-4 border-0 shadow-sm mb-4">
+            <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
+        </div>
+    @endif
+
+    {{-- Filters --}}
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body p-4">
+            <form action="{{ route('admin.products.index') }}" method="GET" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label small fw-bold text-muted text-uppercase mb-1">Search</label>
+                    <input type="text" name="search" class="form-control border-0 bg-light" placeholder="Search product name..." value="{{ request('search') }}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold text-muted text-uppercase mb-1">Category</label>
+                    <select name="category" class="form-select border-0 bg-light" onchange="this.form.submit()">
+                        <option value="">All Categories</option>
+                        @foreach($categories as $cat)
+                            <option value="{{ $cat->id }}" {{ request('category') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
                         @endforeach
-                    </tbody>
-                </table>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold text-muted text-uppercase mb-1">Status</label>
+                    <select name="status" class="form-select border-0 bg-light" onchange="this.form.submit()">
+                        <option value="">All Statuses</option>
+                        <option value="active"        {{ request('status') === 'active' ? 'selected' : '' }}>Active Only</option>
+                        <option value="inactive"      {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactive Only</option>
+                        <option value="featured"      {{ request('status') === 'featured' ? 'selected' : '' }}>Featured</option>
+                        <option value="low_stock"     {{ request('status') === 'low_stock' ? 'selected' : '' }}>Low Stock (&lt;5)</option>
+                        <option value="out_of_stock"  {{ request('status') === 'out_of_stock' ? 'selected' : '' }}>Out of Stock</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex gap-2">
+                    <button type="submit" class="btn btn-dark rounded-pill flex-fill"><i class="bi bi-search me-1"></i>Search</button>
+                    <a href="{{ route('admin.products.index') }}" class="btn btn-outline-secondary rounded-pill px-3" title="Reset"><i class="bi bi-x-lg"></i></a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {{-- Products Table --}}
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-dark text-white">
+                    <tr>
+                        <th class="border-0 px-4 py-3" style="width: 60px;">Image</th>
+                        <th class="border-0 py-3">Product</th>
+                        <th class="border-0 py-3">Category</th>
+                        <th class="border-0 py-3">Price</th>
+                        <th class="border-0 py-3 text-center">Stock</th>
+                        <th class="border-0 py-3 text-center">Status</th>
+                        <th class="border-0 py-3 text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($products as $product)
+                        <tr>
+                            <td class="px-4 py-3">
+                                @if($product->image)
+                                    <img src="{{ asset('storage/' . $product->image) }}" class="rounded-3" style="width: 48px; height: 48px; object-fit: cover;" alt="{{ $product->name }}">
+                                @else
+                                    <div class="rounded-3 bg-light d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                                        <i class="bi bi-image text-muted"></i>
+                                    </div>
+                                @endif
+                            </td>
+                            <td class="py-3">
+                                <div class="fw-bold text-dark">{{ $product->name }}</div>
+                                <small class="text-muted">#{{ $product->id }} &bull; {{ Str::limit($product->description, 50) }}</small>
+                                @if($product->is_featured)
+                                    <span class="badge bg-warning-subtle text-warning ms-1" style="font-size: 0.65rem;">★ Featured</span>
+                                @endif
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark border px-2 py-1">{{ $product->category->name }}</span>
+                            </td>
+                            <td class="fw-bold">LKR {{ number_format($product->price, 2) }}</td>
+                            <td class="text-center">
+                                @if($product->stock === 0)
+                                    <span class="badge bg-danger-subtle text-danger rounded-pill px-2">0 — Out</span>
+                                @elseif($product->stock < 5)
+                                    <span class="badge bg-warning-subtle text-warning rounded-pill px-2">{{ $product->stock }} — Low</span>
+                                @else
+                                    <span class="badge bg-success-subtle text-success rounded-pill px-2">{{ $product->stock }}</span>
+                                @endif
+                            </td>
+                            <td class="text-center">
+                                @if($product->is_active)
+                                    <span class="badge bg-success rounded-pill px-3" style="font-size: 0.7rem;">Active</span>
+                                @else
+                                    <span class="badge bg-secondary rounded-pill px-3" style="font-size: 0.7rem;">Inactive</span>
+                                @endif
+                            </td>
+                            <td class="text-end px-4 py-3">
+                                <div class="d-flex justify-content-end gap-2">
+                                    <a href="{{ route('admin.products.show', $product) }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3" title="View">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="{{ route('admin.products.edit', $product) }}" class="btn btn-outline-dark btn-sm rounded-pill px-3" title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <form action="{{ route('admin.products.destroy', $product) }}" method="POST"
+                                        onsubmit="return confirm('Delete \'{{ addslashes($product->name) }}\'? This cannot be undone.')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3" title="Delete">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="7" class="text-center py-5">
+                                <i class="bi bi-box-seam fs-1 text-muted d-block mb-3"></i>
+                                <h6 class="text-muted">No products found.</h6>
+                                @if(request()->anyFilled(['search','category','status']))
+                                    <a href="{{ route('admin.products.index') }}" class="btn btn-outline-secondary rounded-pill btn-sm mt-2">Clear Filters</a>
+                                @else
+                                    <a href="{{ route('admin.products.create') }}" class="btn btn-warning rounded-pill btn-sm mt-2">Add your first product</a>
+                                @endif
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        @if($products->hasPages())
+            <div class="card-footer bg-white border-top-0 p-4 d-flex justify-content-between align-items-center">
+                <span class="text-muted small">Showing {{ $products->firstItem() }}–{{ $products->lastItem() }} of {{ $products->total() }}</span>
+                {{ $products->links() }}
             </div>
-        </div>
-        <div class="card-footer bg-white border-0 p-4">
-            {{ $products->links() }}
-        </div>
+        @endif
     </div>
 </div>
 @endsection

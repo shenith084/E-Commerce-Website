@@ -16,8 +16,11 @@
 <div class="container py-5">
     <div class="card border-0 shadow-sm rounded-4">
         <div class="card-header bg-white border-0 p-4">
-            <form action="{{ route('admin.orders.index') }}" method="GET" class="row g-3">
+            <form action="{{ route('admin.orders.index') }}" method="GET" class="row g-2 align-items-end">
                 <div class="col-md-4">
+                    <input type="text" name="search" class="form-control border-0 bg-light" placeholder="Search order # or customer..." value="{{ request('search') }}">
+                </div>
+                <div class="col-md-3">
                     <select name="status" class="form-select border-0 bg-light" onchange="this.form.submit()">
                         <option value="">All Statuses</option>
                         <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
@@ -27,10 +30,20 @@
                         <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
                     </select>
                 </div>
-                <div class="col-md-8 text-end">
-                    <span class="text-muted small">Viewing {{ $orders->count() }} of {{ $orders->total() }} total orders</span>
+                <div class="col-md-3">
+                    <select name="payment_status" class="form-select border-0 bg-light" onchange="this.form.submit()">
+                        <option value="">All Payments</option>
+                        <option value="pending" {{ request('payment_status') == 'pending' ? 'selected' : '' }}>Payment Pending</option>
+                        <option value="paid" {{ request('payment_status') == 'paid' ? 'selected' : '' }}>Paid</option>
+                        <option value="failed" {{ request('payment_status') == 'failed' ? 'selected' : '' }}>Failed</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex gap-2">
+                    <button type="submit" class="btn btn-dark btn-sm rounded-pill px-3">Filter</button>
+                    <a href="{{ route('admin.orders.index') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">Reset</a>
                 </div>
             </form>
+            <p class="text-muted small mt-2 mb-0">Showing {{ $orders->count() }} of {{ $orders->total() }} orders</p>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">

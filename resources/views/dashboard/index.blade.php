@@ -23,7 +23,7 @@
 </div>
 
 <div class="container py-5 mt-n4">
-    <div class="row g-4">
+    <div class="row g-3 row-cols-1 row-cols-md-3">
         <!-- Stats -->
         <div class="col-md-4">
             <div class="card border-0 shadow-sm rounded-4 h-100 p-3">
@@ -77,19 +77,19 @@
                         <table class="table table-hover align-middle mb-0">
                             <thead class="bg-light">
                                 <tr>
-                                    <th class="border-0 px-4 py-3 small text-uppercase fw-bold text-muted">Order #</th>
-                                    <th class="border-0 py-3 small text-uppercase fw-bold text-muted">Date</th>
+                                    <th class="border-0 px-3 py-3 small text-uppercase fw-bold text-muted">Order #</th>
+                                    <th class="border-0 py-3 small text-uppercase fw-bold text-muted d-none d-md-table-cell">Date</th>
                                     <th class="border-0 py-3 small text-uppercase fw-bold text-muted">Total</th>
                                     <th class="border-0 py-3 small text-uppercase fw-bold text-muted">Status</th>
-                                    <th class="border-0 py-3 text-end px-4"></th>
+                                    <th class="border-0 py-3 text-end px-3"></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse($orders as $order)
                                     <tr>
-                                        <td class="px-4 py-3"><span class="fw-bold">{{ $order->order_number }}</span></td>
-                                        <td>{{ $order->created_at->format('M d, Y') }}</td>
-                                        <td class="fw-bold text-dark">LKR {{ number_format($order->total, 2) }}</td>
+                                        <td class="px-3 py-3"><span class="fw-bold" style="font-size: 0.85rem;">{{ $order->order_number }}</span></td>
+                                        <td class="d-none d-md-table-cell small">{{ $order->created_at->format('M d, Y') }}</td>
+                                        <td class="fw-bold text-dark small">LKR {{ number_format($order->total, 2) }}</td>
                                         <td>
                                             @php
                                                 $badgeClass = match($order->status) {
@@ -100,10 +100,10 @@
                                                     'cancelled' => 'bg-danger',
                                                 };
                                             @endphp
-                                            <span class="badge {{ $badgeClass }} text-white rounded-pill px-3">{{ ucfirst($order->status) }}</span>
+                                            <span class="badge {{ $badgeClass }} text-white rounded-pill px-2 py-1" style="font-size: 0.65rem;">{{ ucfirst($order->status) }}</span>
                                         </td>
-                                        <td class="text-end px-4">
-                                            <a href="{{ route('dashboard.orders.show', $order) }}" class="btn btn-outline-warning btn-sm rounded-pill px-3">View</a>
+                                        <td class="text-end px-3">
+                                            <a href="{{ route('dashboard.orders.show', $order) }}" class="btn btn-outline-warning btn-sm rounded-pill p-1 px-2" style="font-size: 0.7rem;">View</a>
                                         </td>
                                     </tr>
                                 @empty

@@ -50,13 +50,16 @@ class PayhereService
     {
         $hash = $this->generateHash($order->order_number, $order->total);
 
+        $itemCount   = $order->items()->count();
+        $itemsLabel  = "Order #{$order->order_number} ({$itemCount} item" . ($itemCount !== 1 ? 's' : '') . ')';
+
         $paymentData = [
             'merchant_id'  => $this->merchantId,
             'return_url'   => route('payment.return'),
             'cancel_url'   => route('payment.cancel'),
             'notify_url'   => route('payment.notify'),
             'order_id'     => $order->order_number,
-            'items'        => $order->order_number,
+            'items'        => $itemsLabel,
             'amount'       => number_format($order->total, 2, '.', ''),
             'currency'     => 'LKR',
             'hash'         => $hash,

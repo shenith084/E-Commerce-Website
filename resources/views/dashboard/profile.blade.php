@@ -45,13 +45,37 @@
                 </div>
             </div>
 
-            <div class="card border-0 shadow-sm rounded-4 mt-4 bg-light">
-                <div class="card-body p-4 d-flex align-items-center justify-content-between">
-                    <div>
-                        <h6 class="fw-bold mb-1">Security Settings</h6>
-                        <small class="text-muted">Need to change your password? Visit the auth settings.</small>
-                    </div>
-                    <a href="{{ route('profile.edit') }}" class="btn btn-outline-dark btn-sm rounded-pill px-4">Account Settings</a>
+            {{-- Password Change Section --}}
+            <div class="card border-0 shadow-sm rounded-4 mt-4">
+                <div class="card-body p-4 p-md-5">
+                    <h5 class="fw-bold mb-1"><i class="bi bi-shield-lock me-2 text-warning"></i>Change Password</h5>
+                    <p class="text-muted small mb-4">Leave these fields empty if you don't want to change your password.</p>
+                    <form action="{{ route('dashboard.profile.update') }}" method="POST">
+                        @csrf
+                        {{-- Hidden fields to keep name/phone/address unchanged --}}
+                        <input type="hidden" name="name" value="{{ auth()->user()->name }}">
+                        <input type="hidden" name="phone" value="{{ auth()->user()->phone }}">
+                        <input type="hidden" name="address" value="{{ auth()->user()->address }}">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label for="current_password" class="form-label small fw-bold text-muted">Current Password</label>
+                                <input type="password" name="current_password" id="current_password" class="form-control bg-light border-0 py-3 @error('current_password') is-invalid @enderror" placeholder="Enter current password">
+                                @error('current_password') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
+                            <div class="col-md-6">
+                                <label for="new_password" class="form-label small fw-bold text-muted">New Password</label>
+                                <input type="password" name="new_password" id="new_password" class="form-control bg-light border-0 py-3" placeholder="Min. 8 characters">
+                                @error('new_password') <small class="text-danger">{{ $message }}</small> @enderror
+                            </div>
+                            <div class="col-md-6">
+                                <label for="new_password_confirmation" class="form-label small fw-bold text-muted">Confirm New Password</label>
+                                <input type="password" name="new_password_confirmation" id="new_password_confirmation" class="form-control bg-light border-0 py-3" placeholder="Repeat new password">
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-outline-dark rounded-pill px-4 py-2 fw-bold">Update Password <i class="bi bi-lock ms-1"></i></button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

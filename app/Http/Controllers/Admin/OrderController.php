@@ -16,6 +16,18 @@ class OrderController extends Controller
             $query->where('status', $request->status);
         }
 
+        if ($request->filled('payment_status')) {
+            $query->where('payment_status', $request->payment_status);
+        }
+
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('order_number', 'like', '%' . $request->search . '%')
+                  ->orWhereHas('user', fn($u) => $u->where('name', 'like', '%' . $request->search . '%')
+                                                    ->orWhere('email', 'like', '%' . $request->search . '%'));
+            });
+        }
+
         $orders = $query->paginate(20);
         return view('admin.orders.index', compact('orders'));
     }

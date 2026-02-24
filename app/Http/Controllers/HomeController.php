@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ContactMessage;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -32,15 +33,16 @@ class HomeController extends Controller
 
     public function contactSubmit(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name'    => 'required|string|max:255',
-            'email'    => 'required|email',
-            'subject'  => 'required|string|max:255',
-            'message'  => 'required|string',
+            'email'   => 'required|email|max:255',
+            'subject' => 'required|string|max:255',
+            'message' => 'required|string|max:5000',
         ]);
 
-        // In a real app, you would send an email or store in DB.
-        // For now, we'll just return with success.
-        return back()->with('success', 'Thank you for your message! We will get back to you soon.');
+        // Store the message in the database
+        ContactMessage::create($validated);
+
+        return back()->with('success', 'Thank you for your message! We will get back to you within 24 hours.');
     }
 }

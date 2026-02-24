@@ -89,7 +89,7 @@ Route::post('/payment/notify', [PaymentController::class, 'notify'])->name('paym
 |--------------------------------------------------------------------------
 */
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
-    Route::get('/', fn() => redirect()->route('admin.orders.index'))->name('home');
+    Route::get('/', [Admin\DashboardController::class, 'index'])->name('home');
 
     // Products
     Route::resource('products', Admin\ProductController::class);
@@ -101,6 +101,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('/orders', [Admin\OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [Admin\OrderController::class, 'show'])->name('orders.show');
     Route::patch('/orders/{order}/status', [Admin\OrderController::class, 'updateStatus'])->name('orders.updateStatus');
+
+    // Contact Messages
+    Route::get('/messages', [Admin\ContactMessageController::class, 'index'])->name('messages.index');
+    Route::get('/messages/{message}', [Admin\ContactMessageController::class, 'show'])->name('messages.show');
+    Route::delete('/messages/{message}', [Admin\ContactMessageController::class, 'destroy'])->name('messages.destroy');
+    Route::patch('/messages/{message}/read', [Admin\ContactMessageController::class, 'markAsRead'])->name('messages.markAsRead');
 });
 
 require __DIR__.'/auth.php';

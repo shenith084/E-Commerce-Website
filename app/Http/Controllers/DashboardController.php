@@ -42,12 +42,24 @@ class DashboardController extends Controller
     public function profileUpdate(Request $request)
     {
         $request->validate([
-            'name'    => 'required|string|max:255',
-            'phone'   => 'nullable|string|max:20',
-            'address' => 'nullable|string|max:500',
+            'name'             => 'required|string|max:255',
+            'phone'            => 'nullable|string|max:20',
+            'address'          => 'nullable|string|max:500',
+            'current_password' => 'nullable|required_with:new_password|string',
+            'new_password'     => 'nullable|string|min:8|confirmed',
         ]);
 
-        auth()->user()->update($request->only('name', 'phone', 'address'));
+        $user = auth()->user();
+        $user->update($request->only('name', 'phone', 'address'));
+
+        // Handle password change if requested
+        if ($request->filled('new_password')) {
+            if (!\Hash::check($request->current_password, $user->password)) {
+                return back()->withErrors(['current_password' => 'Current password is incorrect.']);
+            }
+            $user->update(['password' => \Hash::make($request->new_password)]);
+        }
+
         return back()->with('success', 'Profile updated successfully.');
     }
 

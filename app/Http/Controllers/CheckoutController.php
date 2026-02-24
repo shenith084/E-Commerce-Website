@@ -74,6 +74,9 @@ class CheckoutController extends Controller
 
             DB::commit();
 
+            // Clear the cart now that the order is placed
+            session()->forget('cart');
+
             // Store order ID for payment
             session()->put('pending_order_id', $order->id);
             return redirect()->route('payment.pay', $order);
